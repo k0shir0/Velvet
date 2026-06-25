@@ -3,10 +3,7 @@
 A modular, **locally-hosted** Discord bot managed through a sleek web control panel.
 
 Red Velvet starts completely **barebones** — every feature is strictly opt-in. You toggle
-modules on from the dashboard, stage your configuration, and hit **Push Changes** to deploy
-it to the live bot.
-
-> **Status:** Core scaffold (Phase 1). Feature modules are layered in over subsequent releases.
+modules on from the dashboard, stage your configuration, and hit **Push Changes** to deploy to the live bot.
 
 ---
 
