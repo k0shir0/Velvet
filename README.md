@@ -58,23 +58,4 @@ npm run dev
 - Control panel (Vite dev server): **http://localhost:5173**
 - Backend API + WebSocket: **http://localhost:4317** (configurable via `DASHBOARD_PORT`)
 
-Without a `TOKEN`, the dashboard still runs in offline mode so you can explore the panel.
-
----
-
-## Roadmap
-
-- [x] **Phase 1 — Core scaffold:** bot bootstrap, module registry, Apply pipeline, Command
-      Console, Module Manager, Red Velvet dashboard.
-- [x] **Phase 2 — Moderation Core & Automod:** `/kick` `/ban` `/unban` `/timeout` `/warn`
-      `/lockdown` `/purge`, automod engine (blacklist / link filter / spam), and a moderation
-      config panel. Automod needs the **Message Content Intent** (Developer Portal → Bot →
-      Privileged Gateway Intents); it's only requested when automod is enabled.
-- [x] **Phase 3 — Advanced Audit Logging (Overseer):** deleted/edited message retention,
-      voice join/leave/move tracking, staff-channel embeds, and a filterable **Audit Log** tab
-      in the dashboard. Every module now has an in-depth config panel (channel dropdowns,
-      toggles, lists) powered by `/api/guild`.
-- [ ] **Phase 4 — Core Utilities & Automation:** server archiver, hardware-synced presence,
-      permission auditor.
-- [ ] **Phase 5 — Server Engagement:** XP & leaderboard, reaction roles, dynamic server
-      stats, role blueprinting.
+Without a `TOKEN`, the dashboard still runs in offline mode so you can explore the panel. (for testing)
