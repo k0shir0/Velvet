@@ -1,5 +1,5 @@
 import type { CliLine } from "@velvet/shared";
-import { client } from "../bot/client.js";
+import { getClient } from "../bot/client.js";
 import { getAllModules, isEnabled } from "../bot/moduleRegistry.js";
 import { loadPersistedModules } from "./config.js";
 
@@ -18,10 +18,13 @@ const commands: Record<string, ConsoleCommand> = {
   },
   status: {
     desc: "Show the bot connection status",
-    run: () => [
-      client.isReady() ? `Online as ${client.user?.tag}` : "Offline (no bot login)",
-      `Guilds: ${client.guilds.cache.size}`,
-    ],
+    run: () => {
+      const client = getClient();
+      return [
+        client.isReady() ? `Online as ${client.user?.tag}` : "Offline (no bot login)",
+        `Guilds: ${client.guilds.cache.size}`,
+      ];
+    },
   },
   modules: {
     desc: "List modules and whether they are enabled",

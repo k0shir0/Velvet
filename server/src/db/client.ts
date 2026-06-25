@@ -26,5 +26,14 @@ export function ensureSchema(): void {
       module_id TEXT PRIMARY KEY,
       config    TEXT NOT NULL
     );
+    CREATE TABLE IF NOT EXISTS warns (
+      id           INTEGER PRIMARY KEY AUTOINCREMENT,
+      guild_id     TEXT NOT NULL,
+      user_id      TEXT NOT NULL,
+      moderator_id TEXT NOT NULL,
+      reason       TEXT NOT NULL,
+      created_at   INTEGER NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS idx_warns_guild_user ON warns (guild_id, user_id);
   `);
 }

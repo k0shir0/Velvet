@@ -17,7 +17,7 @@ export async function refreshCommands(): Promise<void> {
 
   const commands = getEnabledModules()
     .flatMap((m) => m.commands ?? [])
-    .map((c) => c.toJSON());
+    .map((c) => c.data.toJSON());
 
   const rest = new REST({ version: "10" }).setToken(env.TOKEN);
   await rest.put(Routes.applicationGuildCommands(env.CLIENT_ID, env.GUILD_ID), {

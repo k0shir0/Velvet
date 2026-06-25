@@ -1,6 +1,6 @@
 import type { ModuleId } from "@velvet/shared";
 import { createLogger } from "../logger.js";
-import { client } from "./client.js";
+import { getClient } from "./client.js";
 import type { ModuleContext, VelvetModule } from "./types.js";
 
 const log = createLogger("modules");
@@ -33,7 +33,7 @@ export function getEnabledModules(): VelvetModule[] {
 export async function enableModule(id: ModuleId, config: unknown): Promise<void> {
   const mod = registry.get(id);
   if (!mod || enabled.has(id)) return;
-  const ctx: ModuleContext = { client, config, logger: createLogger(`mod:${id}`) };
+  const ctx: ModuleContext = { client: getClient(), config, logger: createLogger(`mod:${id}`) };
   await mod.onEnable(ctx);
   enabled.add(id);
   log.info(`Enabled module: ${id}`);
@@ -42,7 +42,7 @@ export async function enableModule(id: ModuleId, config: unknown): Promise<void>
 export async function disableModule(id: ModuleId, config: unknown): Promise<void> {
   const mod = registry.get(id);
   if (!mod || !enabled.has(id)) return;
-  const ctx: ModuleContext = { client, config, logger: createLogger(`mod:${id}`) };
+  const ctx: ModuleContext = { client: getClient(), config, logger: createLogger(`mod:${id}`) };
   await mod.onDisable(ctx);
   enabled.delete(id);
   log.info(`Disabled module: ${id}`);

@@ -66,8 +66,10 @@ Without a `TOKEN`, the dashboard still runs in offline mode so you can explore t
 
 - [x] **Phase 1 — Core scaffold:** bot bootstrap, module registry, Apply pipeline, Command
       Console, Module Manager, Red Velvet dashboard.
-- [ ] **Phase 2 — Moderation Core & Automod:** `/kick` `/ban` `/unban` `/timeout` `/warn`
-      `/lockdown`, automod engine, advanced purge.
+- [x] **Phase 2 — Moderation Core & Automod:** `/kick` `/ban` `/unban` `/timeout` `/warn`
+      `/lockdown` `/purge`, automod engine (blacklist / link filter / spam), and a moderation
+      config panel. Automod needs the **Message Content Intent** (Developer Portal → Bot →
+      Privileged Gateway Intents); it's only requested when automod is enabled.
 - [ ] **Phase 3 — Advanced Audit Logging (Overseer):** deleted/edited message retention,
       voice activity, dashboard log viewer.
 - [ ] **Phase 4 — Core Utilities & Automation:** server archiver, hardware-synced presence,

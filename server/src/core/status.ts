@@ -1,9 +1,10 @@
 import si from "systeminformation";
 import type { StatusResponse } from "@velvet/shared";
-import { client } from "../bot/client.js";
+import { getClient } from "../bot/client.js";
 
 /** Live bot + host telemetry for the dashboard status cards. */
 export async function getStatus(): Promise<StatusResponse> {
+  const client = getClient();
   const [cpu, mem] = await Promise.all([si.currentLoad(), si.mem()]);
   return {
     bot: {

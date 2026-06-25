@@ -11,3 +11,13 @@ export const moduleConfig = sqliteTable("module_config", {
   moduleId: text("module_id").primaryKey(),
   config: text("config", { mode: "json" }).notNull(),
 });
+
+/** Moderation warnings (Phase 2 — Moderation Core). */
+export const warns = sqliteTable("warns", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  guildId: text("guild_id").notNull(),
+  userId: text("user_id").notNull(),
+  moderatorId: text("moderator_id").notNull(),
+  reason: text("reason").notNull(),
+  createdAt: integer("created_at").notNull(),
+});

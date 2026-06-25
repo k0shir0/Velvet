@@ -79,12 +79,33 @@ export const MODULE_META: Record<ModuleId, ModuleMeta> = {
  * from `schema.parse(undefined)`. Later phases expand these in place.
  * ──────────────────────────────────────────────────────────────────────── */
 
+export const automodConfigSchema = z
+  .object({
+    /** Delete messages containing any of these (case-insensitive) words. */
+    blacklist: z.array(z.string()).default([]),
+    /** Delete messages that contain links / invites. */
+    blockLinks: z.boolean().default(false),
+    /** Number of messages within the window that counts as spam. */
+    spamCount: z.number().int().min(2).default(6),
+    /** Spam detection window, in seconds. */
+    spamWindowSeconds: z.number().int().min(1).default(5),
+    /** Timeout duration (minutes) applied when automod takes action. */
+    timeoutMinutes: z.number().int().min(1).default(10),
+  })
+  .default({});
+
 export const moderationConfigSchema = z
   .object({
     /** Channel where mod actions are logged. */
     modLogChannelId: z.string().optional(),
+    /** Master switch for the automod engine (separate from the module toggle). */
+    automodEnabled: z.boolean().default(false),
+    automod: automodConfigSchema,
   })
   .default({});
+
+export type AutomodConfig = z.infer<typeof automodConfigSchema>;
+export type ModerationConfig = z.infer<typeof moderationConfigSchema>;
 
 export const auditConfigSchema = z
   .object({

@@ -1,11 +1,29 @@
 import { Client, GatewayIntentBits } from "discord.js";
 
+let instance: Client | null = null;
+
 /**
- * The shared discord.js client. Phase 1 only requests the non-privileged
- * `Guilds` intent so the bot can log in without any portal configuration.
- * Later modules add intents (GuildMembers, MessageContent, GuildVoiceStates,
- * …) — those are privileged and must be enabled in the Developer Portal.
+ * Construct the shared discord.js client.
+ *
+ * `Guilds` + `GuildMessages` are non-privileged, so the bot logs in barebones
+ * with zero portal setup. `MessageContent` IS privileged and is only added
+ * (via `extraIntents`) when automod is enabled — keeping the bot opt-in and
+ * avoiding a login failure for users who don't use automod.
  */
-export const client = new Client({
-  intents: [GatewayIntentBits.Guilds],
-});
+export function initClient(extraIntents: GatewayIntentBits[] = []): Client {
+  instance = new Client({
+    intents: [
+      GatewayIntentBits.Guilds,
+      GatewayIntentBits.GuildMessages,
+      ...extraIntents,
+    ],
+  });
+  return instance;
+}
+
+export function getClient(): Client {
+  if (!instance) {
+    throw new Error("Discord client not initialized — call initClient() first.");
+  }
+  return instance;
+}
