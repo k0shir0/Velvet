@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { SocketEvents } from "@velvet/shared";
-import type { ModerationConfig, ModuleState, ModuleView } from "@velvet/shared";
-import { applyModules, getModules } from "../lib/api";
+import type { GuildInfo, ModuleState, ModuleView } from "@velvet/shared";
+import { applyModules, getGuild, getModules } from "../lib/api";
 import { getSocket } from "../lib/socket";
 import { Toggle } from "../components/Toggle";
-import { ModerationConfigPanel } from "../components/ModerationConfig";
+import { ConfigForm } from "../components/ConfigForm";
 
 interface Staged {
   enabled: boolean;
@@ -15,6 +15,7 @@ export function ModuleManager() {
   const [baseline, setBaseline] = useState<ModuleView[]>([]);
   const [staged, setStaged] = useState<Record<string, Staged>>({});
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+  const [guild, setGuild] = useState<GuildInfo | null>(null);
   const [applying, setApplying] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -27,6 +28,9 @@ export function ModuleManager() {
     getModules()
       .then((r) => load(r.modules))
       .catch((e) => setError((e as Error).message));
+    getGuild()
+      .then(setGuild)
+      .catch(() => setGuild(null));
 
     const socket = getSocket();
     const onApplied = (payload: { modules: ModuleView[] }) => load(payload.modules);
@@ -68,10 +72,6 @@ export function ModuleManager() {
     }
   }
 
-  function discard() {
-    load(baseline);
-  }
-
   return (
     <div>
       <div className="module-grid">
@@ -79,35 +79,35 @@ export function ModuleManager() {
           const s = staged[mod.id];
           const on = s?.enabled ?? mod.enabled;
           const open = expanded[mod.id] ?? false;
-          const configurable = mod.id === "moderation";
+          const dirty = isDirty(mod);
           return (
-            <div key={mod.id} className={`card ${on ? "staged-on" : ""}`}>
+            <div key={mod.id} className={`card ${on ? "staged-on" : ""} ${dirty ? "dirty" : ""}`}>
               <div className="card-head">
                 <h3>{mod.name}</h3>
                 <Toggle checked={on} onChange={(v) => setEnabled(mod.id, v)} />
               </div>
               <p className="card-desc">{mod.description}</p>
-              <ul className="feature-list">
-                {mod.features.map((f) => (
-                  <li key={f}>{f}</li>
-                ))}
-              </ul>
+              {!open && (
+                <ul className="feature-list">
+                  {mod.features.map((f) => (
+                    <li key={f}>{f}</li>
+                  ))}
+                </ul>
+              )}
 
-              {configurable && (
-                <>
-                  <button
-                    className="configure-btn"
-                    onClick={() => setExpanded((e) => ({ ...e, [mod.id]: !open }))}
-                  >
-                    {open ? "▾ Hide configuration" : "▸ Configure"}
-                  </button>
-                  {open && (
-                    <ModerationConfigPanel
-                      value={s?.config ?? mod.config}
-                      onChange={(cfg: ModerationConfig) => setConfig(mod.id, cfg)}
-                    />
-                  )}
-                </>
+              <button
+                className="configure-btn"
+                onClick={() => setExpanded((e) => ({ ...e, [mod.id]: !open }))}
+              >
+                {open ? "▾ Hide configuration" : "▸ Configure"}
+              </button>
+              {open && (
+                <ConfigForm
+                  moduleId={mod.id}
+                  value={s?.config ?? mod.config}
+                  guild={guild}
+                  onChange={(cfg) => setConfig(mod.id, cfg)}
+                />
               )}
             </div>
           );
@@ -130,7 +130,7 @@ export function ModuleManager() {
           </span>
         )}
         <span className="spacer" />
-        <button className="ghost-btn" onClick={discard} disabled={pending === 0 || applying}>
+        <button className="ghost-btn" onClick={() => load(baseline)} disabled={pending === 0 || applying}>
           Discard
         </button>
         <button className="btn btn-primary" onClick={push} disabled={pending === 0 || applying}>

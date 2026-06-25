@@ -70,8 +70,10 @@ Without a `TOKEN`, the dashboard still runs in offline mode so you can explore t
       `/lockdown` `/purge`, automod engine (blacklist / link filter / spam), and a moderation
       config panel. Automod needs the **Message Content Intent** (Developer Portal → Bot →
       Privileged Gateway Intents); it's only requested when automod is enabled.
-- [ ] **Phase 3 — Advanced Audit Logging (Overseer):** deleted/edited message retention,
-      voice activity, dashboard log viewer.
+- [x] **Phase 3 — Advanced Audit Logging (Overseer):** deleted/edited message retention,
+      voice join/leave/move tracking, staff-channel embeds, and a filterable **Audit Log** tab
+      in the dashboard. Every module now has an in-depth config panel (channel dropdowns,
+      toggles, lists) powered by `/api/guild`.
 - [ ] **Phase 4 — Core Utilities & Automation:** server archiver, hardware-synced presence,
       permission auditor.
 - [ ] **Phase 5 — Server Engagement:** XP & leaderboard, reaction roles, dynamic server

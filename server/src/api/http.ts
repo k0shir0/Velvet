@@ -5,7 +5,9 @@ import { fileURLToPath } from "node:url";
 import express from "express";
 import type { LoginRequest } from "@velvet/shared";
 import { issueToken, requireAuth } from "./auth.js";
+import { auditRouter } from "./routes/audit.js";
 import { consoleRouter } from "./routes/console.js";
+import { guildRouter } from "./routes/guild.js";
 import { modulesRouter } from "./routes/modules.js";
 import { statusRouter } from "./routes/status.js";
 
@@ -26,6 +28,8 @@ export function createHttpServer(): HttpServer {
   app.use("/api/modules", requireAuth, modulesRouter);
   app.use("/api/console", requireAuth, consoleRouter);
   app.use("/api/status", requireAuth, statusRouter);
+  app.use("/api/guild", requireAuth, guildRouter);
+  app.use("/api/audit", requireAuth, auditRouter);
 
   // In production, serve the built dashboard (in dev, Vite serves it).
   const webDist = join(dirname(fileURLToPath(import.meta.url)), "../../../web/dist");

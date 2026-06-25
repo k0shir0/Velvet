@@ -6,8 +6,9 @@ import { getSocket } from "./lib/socket";
 import { Login } from "./components/Login";
 import { CommandConsole } from "./tabs/CommandConsole";
 import { ModuleManager } from "./tabs/ModuleManager";
+import { AuditLog } from "./tabs/AuditLog";
 
-type Tab = "console" | "modules";
+type Tab = "console" | "modules" | "audit";
 
 export function App() {
   const [authed, setAuthed] = useState(() => !!getToken());
@@ -66,9 +67,17 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
         >
           Module Manager
         </button>
+        <button
+          className={`tab ${tab === "audit" ? "active" : ""}`}
+          onClick={() => setTab("audit")}
+        >
+          Audit Log
+        </button>
       </nav>
       <main className="content">
-        {tab === "console" ? <CommandConsole /> : <ModuleManager />}
+        {tab === "console" && <CommandConsole />}
+        {tab === "modules" && <ModuleManager />}
+        {tab === "audit" && <AuditLog />}
       </main>
     </div>
   );

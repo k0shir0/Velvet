@@ -35,5 +35,18 @@ export function ensureSchema(): void {
       created_at   INTEGER NOT NULL
     );
     CREATE INDEX IF NOT EXISTS idx_warns_guild_user ON warns (guild_id, user_id);
+    CREATE TABLE IF NOT EXISTS audit_events (
+      id           INTEGER PRIMARY KEY AUTOINCREMENT,
+      guild_id     TEXT NOT NULL,
+      type         TEXT NOT NULL,
+      user_id      TEXT NOT NULL,
+      user_tag     TEXT NOT NULL,
+      channel_id   TEXT,
+      channel_name TEXT,
+      before       TEXT,
+      after        TEXT,
+      created_at   INTEGER NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS idx_audit_guild_time ON audit_events (guild_id, created_at);
   `);
 }

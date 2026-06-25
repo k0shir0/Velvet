@@ -1,7 +1,8 @@
-import { Events, GatewayIntentBits } from "discord.js";
+import { Events } from "discord.js";
 import { env } from "./env.js";
 import { logger } from "./logger.js";
 import { initClient } from "./bot/client.js";
+import { computeIntents } from "./bot/intents.js";
 import { attachInteractionRouter } from "./bot/interactions.js";
 import { registerAllModules } from "./bot/modules/index.js";
 import { ensureSchema } from "./db/client.js";
@@ -13,14 +14,11 @@ async function main(): Promise<void> {
   ensureSchema();
   registerAllModules();
 
-  // Only request the privileged Message Content intent if automod is enabled,
-  // so the bot logs in barebones otherwise.
-  const moderation = getModuleStates().find((s) => s.id === "moderation");
-  const automodOn = Boolean(
-    moderation?.enabled && (moderation.config as { automodEnabled?: boolean }).automodEnabled,
-  );
-  const client = initClient(automodOn ? [GatewayIntentBits.MessageContent] : []);
-  if (automodOn) logger.info("Automod enabled — requesting the Message Content intent.");
+  // Compute gateway intents from the persisted module state so privileged
+  // intents are only requested when a feature actually needs them.
+  const intents = computeIntents(getModuleStates());
+  const client = initClient(intents);
+  logger.info(`Gateway intents: ${intents.length} requested.`);
 
   attachInteractionRouter();
 

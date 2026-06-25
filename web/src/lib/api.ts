@@ -1,5 +1,8 @@
 import type {
+  AuditQuery,
+  AuditResponse,
   CliLine,
+  GuildInfo,
   LoginResponse,
   ModuleState,
   ModulesResponse,
@@ -70,3 +73,14 @@ export const runConsole = (command: string): Promise<{ lines: CliLine[] }> =>
 
 export const getStatus = (): Promise<StatusResponse> =>
   request<StatusResponse>("/api/status");
+
+export const getGuild = (): Promise<GuildInfo> => request<GuildInfo>("/api/guild");
+
+export const getAudit = (q: AuditQuery = {}): Promise<AuditResponse> => {
+  const params = new URLSearchParams();
+  if (q.type) params.set("type", q.type);
+  if (q.userId) params.set("userId", q.userId);
+  if (q.limit) params.set("limit", String(q.limit));
+  const qs = params.toString();
+  return request<AuditResponse>(`/api/audit${qs ? `?${qs}` : ""}`);
+};

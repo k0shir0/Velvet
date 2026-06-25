@@ -21,3 +21,17 @@ export const warns = sqliteTable("warns", {
   reason: text("reason").notNull(),
   createdAt: integer("created_at").notNull(),
 });
+
+/** Audit events (Phase 3 — the Overseer). */
+export const auditEvents = sqliteTable("audit_events", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  guildId: text("guild_id").notNull(),
+  type: text("type").notNull(),
+  userId: text("user_id").notNull(),
+  userTag: text("user_tag").notNull(),
+  channelId: text("channel_id"),
+  channelName: text("channel_name"),
+  before: text("before"),
+  after: text("after"),
+  createdAt: integer("created_at").notNull(),
+});
