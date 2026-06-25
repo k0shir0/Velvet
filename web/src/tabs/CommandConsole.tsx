@@ -44,12 +44,7 @@ export function CommandConsole() {
 
   return (
     <div className="terminal">
-      <div className="terminal-bar">
-        <span className="lamp r" />
-        <span className="lamp y" />
-        <span className="lamp g" />
-        <span style={{ marginLeft: 8 }}>velvet · console</span>
-      </div>
+      <div className="terminal-bar" />
       <div className="terminal-out" ref={outRef}>
         {entries.length === 0 && (
           <div className="empty-hint">

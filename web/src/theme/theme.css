@@ -203,24 +203,9 @@ button {
   box-shadow: var(--shadow);
 }
 .terminal-bar {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 11px 16px;
+  height: 14px;
   border-bottom: 1px solid var(--velvet-border);
-  font-size: 12px;
-  color: var(--text-faint);
-  letter-spacing: 1px;
-  text-transform: uppercase;
 }
-.terminal-bar .lamp {
-  width: 11px;
-  height: 11px;
-  border-radius: 50%;
-}
-.lamp.r { background: #ff5f56; }
-.lamp.y { background: #ffbd2e; }
-.lamp.g { background: #27c93f; }
 .terminal-out {
   flex: 1;
   overflow-y: auto;
