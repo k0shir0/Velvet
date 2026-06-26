@@ -8,8 +8,10 @@ import { issueToken, requireAuth } from "./auth.js";
 import { auditRouter } from "./routes/audit.js";
 import { consoleRouter } from "./routes/console.js";
 import { guildRouter } from "./routes/guild.js";
+import { leaderboardRouter } from "./routes/leaderboard.js";
 import { modulesRouter } from "./routes/modules.js";
 import { permissionsRouter } from "./routes/permissions.js";
+import { reactionRolesRouter } from "./routes/reactionRoles.js";
 import { statusRouter } from "./routes/status.js";
 
 export function createHttpServer(): HttpServer {
@@ -32,6 +34,8 @@ export function createHttpServer(): HttpServer {
   app.use("/api/guild", requireAuth, guildRouter);
   app.use("/api/audit", requireAuth, auditRouter);
   app.use("/api/permissions", requireAuth, permissionsRouter);
+  app.use("/api/leaderboard", requireAuth, leaderboardRouter);
+  app.use("/api/reaction-roles", requireAuth, reactionRolesRouter);
 
   // In production, serve the built dashboard (in dev, Vite serves it).
   const webDist = join(dirname(fileURLToPath(import.meta.url)), "../../../web/dist");

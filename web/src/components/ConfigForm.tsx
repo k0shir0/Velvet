@@ -58,6 +58,7 @@ function Field({
   }
 
   const textChannels = guild?.channels.filter((c) => c.type === "text") ?? [];
+  const voiceChannels = guild?.channels.filter((c) => c.type === "voice") ?? [];
 
   return (
     <label className={`cfg-row ${disabled ? "disabled" : ""}`}>
@@ -126,6 +127,30 @@ function Field({
             type="text"
             disabled={disabled}
             placeholder="channel ID"
+            value={String(raw ?? "")}
+            onChange={(e) => onSet(field.key, e.target.value || undefined)}
+          />
+        ))}
+
+      {field.type === "voiceChannel" &&
+        (guild?.available ? (
+          <select
+            disabled={disabled}
+            value={String(raw ?? "")}
+            onChange={(e) => onSet(field.key, e.target.value || undefined)}
+          >
+            <option value="">— none —</option>
+            {voiceChannels.map((c) => (
+              <option key={c.id} value={c.id}>
+                🔊 {c.name}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <input
+            type="text"
+            disabled={disabled}
+            placeholder="voice channel ID"
             value={String(raw ?? "")}
             onChange={(e) => onSet(field.key, e.target.value || undefined)}
           />

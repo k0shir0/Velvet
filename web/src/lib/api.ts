@@ -3,10 +3,14 @@ import type {
   AuditResponse,
   CliLine,
   GuildInfo,
+  LeaderboardResponse,
   LoginResponse,
   ModuleState,
   ModulesResponse,
   PermissionAudit,
+  ReactionRoleDeployRequest,
+  ReactionRoleSet,
+  ReactionRolesResponse,
   StatusResponse,
 } from "@velvet/shared";
 
@@ -79,6 +83,21 @@ export const getGuild = (): Promise<GuildInfo> => request<GuildInfo>("/api/guild
 
 export const getPermissions = (): Promise<PermissionAudit> =>
   request<PermissionAudit>("/api/permissions");
+
+export const getLeaderboard = (): Promise<LeaderboardResponse> =>
+  request<LeaderboardResponse>("/api/leaderboard");
+
+export const getReactionRoles = (): Promise<ReactionRolesResponse> =>
+  request<ReactionRolesResponse>("/api/reaction-roles");
+
+export const deployReactionRole = (req: ReactionRoleDeployRequest): Promise<ReactionRoleSet> =>
+  request<ReactionRoleSet>("/api/reaction-roles/deploy", {
+    method: "POST",
+    body: JSON.stringify(req),
+  });
+
+export const deleteReactionRole = (messageId: string): Promise<{ ok: boolean }> =>
+  request<{ ok: boolean }>(`/api/reaction-roles/${messageId}`, { method: "DELETE" });
 
 export const getAudit = (q: AuditQuery = {}): Promise<AuditResponse> => {
   const params = new URLSearchParams();

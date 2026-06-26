@@ -1,6 +1,6 @@
 import { register } from "../moduleRegistry.js";
 import { auditModule } from "./audit/index.js";
-import { engagementModule } from "./engagement.js";
+import { engagementModule } from "./engagement/index.js";
 import { moderationModule } from "./moderation/index.js";
 import { utilitiesModule } from "./utilities/index.js";
 

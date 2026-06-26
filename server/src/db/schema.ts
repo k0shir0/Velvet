@@ -1,4 +1,4 @@
-import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { integer, primaryKey, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 /** Enabled/disabled state for each module. */
 export const modules = sqliteTable("modules", {
@@ -20,6 +20,25 @@ export const warns = sqliteTable("warns", {
   moderatorId: text("moderator_id").notNull(),
   reason: text("reason").notNull(),
   createdAt: integer("created_at").notNull(),
+});
+
+/** XP per user per guild (Phase 5 — Engagement). */
+export const xp = sqliteTable("xp", {
+  guildId: text("guild_id").notNull(),
+  userId: text("user_id").notNull(),
+  xp: integer("xp").notNull().default(0),
+}, (t) => ({
+  pk: primaryKey({ columns: [t.guildId, t.userId] }),
+}));
+
+/** Reaction-role mappings (Phase 5 — Engagement). */
+export const reactionRoles = sqliteTable("reaction_roles", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  guildId: text("guild_id").notNull(),
+  channelId: text("channel_id").notNull(),
+  messageId: text("message_id").notNull(),
+  emoji: text("emoji").notNull(),
+  roleId: text("role_id").notNull(),
 });
 
 /** Audit events (Phase 3 — the Overseer). */

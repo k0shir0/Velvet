@@ -1,4 +1,4 @@
-import { Client, GatewayIntentBits } from "discord.js";
+import { Client, GatewayIntentBits, Partials } from "discord.js";
 
 let instance: Client | null = null;
 
@@ -11,6 +11,8 @@ let instance: Client | null = null;
 export function initClient(intents: GatewayIntentBits[]): Client {
   instance = new Client({
     intents: intents.length > 0 ? intents : [GatewayIntentBits.Guilds],
+    // Receive reaction/message events on messages not in the cache.
+    partials: [Partials.Message, Partials.Channel, Partials.Reaction],
   });
   return instance;
 }

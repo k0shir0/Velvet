@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { SocketEvents } from "@velvet/shared";
-import type { GuildInfo, ModuleState, ModuleView } from "@velvet/shared";
+import type { GuildInfo, ModuleId, ModuleState, ModuleView } from "@velvet/shared";
 import { applyModules, getGuild, getModules } from "../lib/api";
 import { getSocket } from "../lib/socket";
 import { Toggle } from "../components/Toggle";
 import { ConfigForm } from "../components/ConfigForm";
+import { EngagementExtras } from "../components/EngagementExtras";
 
 interface Staged {
   enabled: boolean;
@@ -14,8 +15,8 @@ interface Staged {
 export function ModuleManager() {
   const [baseline, setBaseline] = useState<ModuleView[]>([]);
   const [staged, setStaged] = useState<Record<string, Staged>>({});
-  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const [guild, setGuild] = useState<GuildInfo | null>(null);
+  const [view, setView] = useState<"grid" | ModuleId>("grid");
   const [applying, setApplying] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -72,47 +73,83 @@ export function ModuleManager() {
     }
   }
 
+  const active = view !== "grid" ? baseline.find((m) => m.id === view) : undefined;
+
   return (
     <div>
-      <div className="module-grid">
-        {baseline.map((mod) => {
-          const s = staged[mod.id];
-          const on = s?.enabled ?? mod.enabled;
-          const open = expanded[mod.id] ?? false;
-          const dirty = isDirty(mod);
-          return (
-            <div key={mod.id} className={`card ${on ? "staged-on" : ""} ${dirty ? "dirty" : ""}`}>
-              <div className="card-head">
-                <h3>{mod.name}</h3>
-                <Toggle checked={on} onChange={(v) => setEnabled(mod.id, v)} />
-              </div>
-              <p className="card-desc">{mod.description}</p>
-              {!open && (
+      {view === "grid" ? (
+        <div className="module-grid">
+          {baseline.map((mod) => {
+            const on = staged[mod.id]?.enabled ?? mod.enabled;
+            return (
+              <div
+                key={mod.id}
+                className={`card module-card ${on ? "staged-on" : ""} ${isDirty(mod) ? "dirty" : ""}`}
+                onClick={() => setView(mod.id)}
+              >
+                <div className="card-head">
+                  <h3>{mod.name}</h3>
+                  <div onClick={(e) => e.stopPropagation()}>
+                    <Toggle checked={on} onChange={(v) => setEnabled(mod.id, v)} />
+                  </div>
+                </div>
+                <p className="card-desc">{mod.description}</p>
                 <ul className="feature-list">
                   {mod.features.map((f) => (
                     <li key={f}>{f}</li>
                   ))}
                 </ul>
-              )}
+                <div className="card-cta">Open &amp; configure →</div>
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        active && (
+          <div className="module-detail">
+            <button className="back-btn" onClick={() => setView("grid")}>
+              ← All modules
+            </button>
+            <nav className="mod-tabs">
+              {baseline.map((m) => (
+                <button
+                  key={m.id}
+                  className={`mod-tab ${m.id === view ? "active" : ""}`}
+                  onClick={() => setView(m.id)}
+                >
+                  <span className={`mod-dot ${(staged[m.id]?.enabled ?? m.enabled) ? "on" : ""}`} />
+                  {m.name}
+                </button>
+              ))}
+            </nav>
 
-              <button
-                className="configure-btn"
-                onClick={() => setExpanded((e) => ({ ...e, [mod.id]: !open }))}
-              >
-                {open ? "▾ Hide configuration" : "▸ Configure"}
-              </button>
-              {open && (
-                <ConfigForm
-                  moduleId={mod.id}
-                  value={s?.config ?? mod.config}
-                  guild={guild}
-                  onChange={(cfg) => setConfig(mod.id, cfg)}
-                />
-              )}
+            <div className="detail-body">
+              <div className="detail-head">
+                <div>
+                  <h2>{active.name}</h2>
+                  <p>{active.description}</p>
+                </div>
+                <label className="enable-switch">
+                  <span>{(staged[active.id]?.enabled ?? active.enabled) ? "Enabled" : "Disabled"}</span>
+                  <Toggle
+                    checked={staged[active.id]?.enabled ?? active.enabled}
+                    onChange={(v) => setEnabled(active.id, v)}
+                  />
+                </label>
+              </div>
+
+              <ConfigForm
+                moduleId={active.id}
+                value={staged[active.id]?.config ?? active.config}
+                guild={guild}
+                onChange={(cfg) => setConfig(active.id, cfg)}
+              />
+
+              {active.id === "engagement" && <EngagementExtras guild={guild} />}
             </div>
-          );
-        })}
-      </div>
+          </div>
+        )
+      )}
 
       <div className="apply-bar">
         <span className="pending">

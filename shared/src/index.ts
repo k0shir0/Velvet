@@ -145,6 +145,11 @@ export const engagementConfigSchema = z
     levelUpMessage: z.string().default("GG {user}, you reached level {level}!"),
     ignoredChannelIds: z.array(z.string()).default([]),
     leaderboardSize: z.number().int().min(1).max(100).default(10),
+    // Dynamic server-stat channels (voice channels renamed to show metrics).
+    statMembersChannelId: z.string().optional(),
+    statMembersTemplate: z.string().default("Members: {count}"),
+    statVoiceChannelId: z.string().optional(),
+    statVoiceTemplate: z.string().default("In Voice: {count}"),
   })
   .default({});
 
@@ -181,6 +186,7 @@ export type ConfigFieldType =
   | "number"
   | "stringList"
   | "channel"
+  | "voiceChannel"
   | "channelList";
 
 export interface ConfigField {
@@ -230,6 +236,10 @@ export const MODULE_CONFIG_FIELDS: Record<ModuleId, ConfigField[]> = {
     { key: "levelUpMessage", label: "Level-up message", type: "longtext", dependsOn: "announceLevelUp", help: "Placeholders: {user}, {level}." },
     { key: "ignoredChannelIds", label: "Ignored channels", type: "channelList", section: "Filters" },
     { key: "leaderboardSize", label: "Leaderboard size", type: "number", min: 1, max: 100, section: "Leaderboard" },
+    { key: "statMembersChannelId", label: "Member-count channel", type: "voiceChannel", section: "Server stats", help: "A voice channel renamed to show the member count." },
+    { key: "statMembersTemplate", label: "Member-count name", type: "text", help: "Placeholder: {count}." },
+    { key: "statVoiceChannelId", label: "In-voice channel", type: "voiceChannel" },
+    { key: "statVoiceTemplate", label: "In-voice name", type: "text", help: "Placeholder: {count}." },
   ],
 };
 
@@ -357,6 +367,37 @@ export interface ChannelPermissionInfo {
 export interface PermissionAudit {
   available: boolean;
   channels: ChannelPermissionInfo[];
+}
+
+/* Engagement: leaderboard + reaction roles (Phase 5). */
+export interface LeaderboardEntry {
+  rank: number;
+  userId: string;
+  tag: string;
+  xp: number;
+  level: number;
+}
+export interface LeaderboardResponse {
+  entries: LeaderboardEntry[];
+}
+
+export interface ReactionRolePair {
+  emoji: string;
+  roleId: string;
+}
+export interface ReactionRoleSet {
+  messageId: string;
+  channelId: string;
+  pairs: ReactionRolePair[];
+}
+export interface ReactionRolesResponse {
+  sets: ReactionRoleSet[];
+}
+export interface ReactionRoleDeployRequest {
+  channelId: string;
+  title?: string;
+  description?: string;
+  pairs: ReactionRolePair[];
 }
 
 /* ────────────────────────────────────────────────────────────────────────

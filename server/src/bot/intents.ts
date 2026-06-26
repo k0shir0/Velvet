@@ -24,5 +24,11 @@ export function computeIntents(states: ModuleState[]): GatewayIntentBits[] {
     if (cfg.logDeletes || cfg.logEdits) intents.add(GatewayIntentBits.MessageContent);
   }
 
+  const engagement = states.find((s) => s.id === "engagement");
+  if (engagement?.enabled) {
+    intents.add(GatewayIntentBits.GuildVoiceStates);
+    intents.add(GatewayIntentBits.GuildMessageReactions);
+  }
+
   return [...intents];
 }
