@@ -270,6 +270,7 @@ button {
   margin: 18px 0;
 }
 .tab {
+  position: relative;
   background: transparent;
   border: 1px solid transparent;
   color: var(--text-dim);
@@ -277,16 +278,41 @@ button {
   border-radius: var(--radius-sm);
   font-size: 14px;
   font-weight: 550;
-  transition: var(--transition);
+  transition:
+    color var(--transition),
+    background var(--transition),
+    transform var(--transition),
+    box-shadow var(--transition);
+}
+.tab::after {
+  content: "";
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  bottom: 5px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--crimson);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform var(--transition);
 }
 .tab:hover {
   color: var(--text);
+  background: var(--velvet-surface);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4), 0 0 16px var(--crimson-glow);
+}
+.tab:hover::after {
+  transform: scaleX(1);
 }
 .tab.active {
   color: var(--text);
   background: var(--velvet-surface);
   border-color: var(--velvet-border);
-  box-shadow: inset 0 -2px 0 var(--crimson);
+}
+.tab.active::after {
+  transform: scaleX(1);
 }
 
 .content {
@@ -787,6 +813,90 @@ button {
   background: linear-gradient(150deg, var(--crimson), var(--crimson-deep));
   border-color: transparent;
   color: #fff;
+  cursor: pointer;
+}
+
+/* Searchable combobox */
+.combo {
+  position: relative;
+}
+.combo.disabled {
+  opacity: 0.45;
+  pointer-events: none;
+}
+.combo-input {
+  width: 100%;
+  background: var(--velvet-bg);
+  border: 1px solid var(--velvet-border);
+  border-radius: var(--radius-sm);
+  padding: 9px 11px;
+  color: var(--text);
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  transition: var(--transition);
+}
+.combo-input:focus {
+  border-color: var(--crimson);
+}
+.combo-clear {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: var(--text-faint);
+  font-size: 17px;
+  line-height: 1;
+  padding: 0 4px;
+}
+.combo-clear:hover {
+  color: var(--text);
+}
+.combo-list {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 220px;
+  overflow-y: auto;
+  background: var(--velvet-surface);
+  border: 1px solid var(--velvet-border-strong);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+  padding: 4px;
+  animation: menu-pop 120ms ease;
+}
+.combo-option {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  padding: 8px 10px;
+  font-size: 13px;
+  border-radius: 6px;
+  transition: var(--transition);
+}
+.combo-option:hover {
+  background: var(--velvet-surface-2);
+  color: var(--text);
+}
+.combo-option.sel {
+  color: var(--crimson);
+}
+.combo-empty {
+  padding: 8px 10px;
+  color: var(--text-faint);
+  font-size: 13px;
+}
+.multi {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 /* Audit log */
@@ -829,6 +939,15 @@ button {
   border: 1px solid var(--velvet-border);
   border-radius: var(--radius);
   background: var(--velvet-bg-2);
+  display: flex;
+  flex-direction: column;
+}
+.audit-table > .empty-hint {
+  margin: auto;
+  text-align: center;
+  padding: 48px 24px;
+  max-width: 460px;
+  line-height: 1.6;
 }
 .audit-row {
   display: grid;

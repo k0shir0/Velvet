@@ -11,6 +11,7 @@ import {
   getLeaderboard,
   getReactionRoles,
 } from "../lib/api";
+import { Combobox } from "./Combobox";
 
 export function EngagementExtras({ guild }: { guild: GuildInfo | null }) {
   return (
@@ -141,14 +142,12 @@ function ReactionRoleManager({ guild }: { guild: GuildInfo | null }) {
         <div className="cfg-row">
           <span>Channel</span>
           {guild?.available ? (
-            <select value={channelId} onChange={(e) => setChannelId(e.target.value)}>
-              <option value="">— pick channel —</option>
-              {textChannels.map((c) => (
-                <option key={c.id} value={c.id}>
-                  #{c.name}
-                </option>
-              ))}
-            </select>
+            <Combobox
+              options={textChannels.map((c) => ({ id: c.id, label: `#${c.name}` }))}
+              value={channelId}
+              placeholder="Search channels…"
+              onChange={setChannelId}
+            />
           ) : (
             <input
               value={channelId}

@@ -1,8 +1,6 @@
-import {
-  MODULE_CONFIG_FIELDS,
-  MODULE_CONFIG_SCHEMAS,
-} from "@velvet/shared";
+import { MODULE_CONFIG_FIELDS, MODULE_CONFIG_SCHEMAS } from "@velvet/shared";
 import type { ConfigField, GuildInfo, ModuleId } from "@velvet/shared";
+import { Combobox, type ComboOption } from "./Combobox";
 import { Toggle } from "./Toggle";
 
 interface Props {
@@ -47,25 +45,23 @@ function Field({
   onSet: (path: string, v: unknown) => void;
 }) {
   const raw = getPath(cfg, field.key);
+  const channelOptions = (type: "text" | "voice"): ComboOption[] =>
+    (guild?.channels.filter((c) => c.type === type) ?? []).map((c) => ({
+      id: c.id,
+      label: (type === "voice" ? "🔊 " : "#") + c.name,
+    }));
 
   if (field.type === "boolean") {
     return (
       <div className={`cfg-row toggle-row ${disabled ? "disabled" : ""}`}>
         <span>{field.label}</span>
-        <Toggle
-          checked={Boolean(raw)}
-          disabled={disabled}
-          onChange={(v) => onSet(field.key, v)}
-        />
+        <Toggle checked={Boolean(raw)} disabled={disabled} onChange={(v) => onSet(field.key, v)} />
       </div>
     );
   }
 
-  const textChannels = guild?.channels.filter((c) => c.type === "text") ?? [];
-  const voiceChannels = guild?.channels.filter((c) => c.type === "voice") ?? [];
-
   return (
-    <label className={`cfg-row ${disabled ? "disabled" : ""}`}>
+    <div className={`cfg-row ${disabled ? "disabled" : ""}`}>
       <span>
         {field.label}
         {field.help && <em className="cfg-help"> — {field.help}</em>}
@@ -114,18 +110,13 @@ function Field({
 
       {field.type === "channel" &&
         (guild?.available ? (
-          <select
-            disabled={disabled}
+          <Combobox
+            options={channelOptions("text")}
             value={String(raw ?? "")}
-            onChange={(e) => onSet(field.key, e.target.value || undefined)}
-          >
-            <option value="">— none —</option>
-            {textChannels.map((c) => (
-              <option key={c.id} value={c.id}>
-                #{c.name}
-              </option>
-            ))}
-          </select>
+            disabled={disabled}
+            placeholder="Search channels…"
+            onChange={(id) => onSet(field.key, id || undefined)}
+          />
         ) : (
           <input
             type="text"
@@ -138,18 +129,13 @@ function Field({
 
       {field.type === "voiceChannel" &&
         (guild?.available ? (
-          <select
-            disabled={disabled}
+          <Combobox
+            options={channelOptions("voice")}
             value={String(raw ?? "")}
-            onChange={(e) => onSet(field.key, e.target.value || undefined)}
-          >
-            <option value="">— none —</option>
-            {voiceChannels.map((c) => (
-              <option key={c.id} value={c.id}>
-                🔊 {c.name}
-              </option>
-            ))}
-          </select>
+            disabled={disabled}
+            placeholder="Search voice channels…"
+            onChange={(id) => onSet(field.key, id || undefined)}
+          />
         ) : (
           <input
             type="text"
@@ -162,22 +148,12 @@ function Field({
 
       {field.type === "channelList" &&
         (guild?.available ? (
-          <div className="chip-list">
-            {textChannels.map((c) => {
-              const selected = asArray(raw).includes(c.id);
-              return (
-                <button
-                  type="button"
-                  key={c.id}
-                  className={`chip ${selected ? "on" : ""}`}
-                  disabled={disabled}
-                  onClick={() => onSet(field.key, toggleItem(asArray(raw), c.id))}
-                >
-                  #{c.name}
-                </button>
-              );
-            })}
-          </div>
+          <ChannelMulti
+            options={channelOptions("text")}
+            value={asArray(raw)}
+            disabled={disabled}
+            onChange={(v) => onSet(field.key, v)}
+          />
         ) : (
           <textarea
             rows={2}
@@ -187,7 +163,48 @@ function Field({
             onChange={(e) => onSet(field.key, splitList(e.target.value))}
           />
         ))}
-    </label>
+    </div>
+  );
+}
+
+function ChannelMulti({
+  options,
+  value,
+  disabled,
+  onChange,
+}: {
+  options: ComboOption[];
+  value: string[];
+  disabled: boolean;
+  onChange: (value: string[]) => void;
+}) {
+  const selected = value.map((id) => options.find((o) => o.id === id) ?? { id, label: id });
+  const available = options.filter((o) => !value.includes(o.id));
+  return (
+    <div className="multi">
+      {selected.length > 0 && (
+        <div className="chip-list">
+          {selected.map((o) => (
+            <button
+              type="button"
+              key={o.id}
+              className="chip on"
+              disabled={disabled}
+              onClick={() => onChange(value.filter((v) => v !== o.id))}
+            >
+              {o.label} ✕
+            </button>
+          ))}
+        </div>
+      )}
+      <Combobox
+        options={available}
+        value=""
+        disabled={disabled}
+        placeholder="Add channel…"
+        onChange={(id) => id && onChange([...value, id])}
+      />
+    </div>
   );
 }
 
@@ -223,10 +240,6 @@ function splitList(input: string): string[] {
     .split(/[\n,]/)
     .map((w) => w.trim())
     .filter((w) => w.length > 0);
-}
-
-function toggleItem(list: string[], item: string): string[] {
-  return list.includes(item) ? list.filter((x) => x !== item) : [...list, item];
 }
 
 function clampInt(input: string, min: number, max?: number): number {

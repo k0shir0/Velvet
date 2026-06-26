@@ -87,11 +87,7 @@ function Header({ system, onLogout }: { system: SystemStats | null; onLogout: ()
   return (
     <header className="header">
       <div className="brand">
-        <div className="brand-mark" />
-        <div>
-          <h1>Velvet</h1>
-          <span>Control Panel</span>
-        </div>
+        <h1>Velvet</h1>
       </div>
       <div className="header-spacer" />
       {system && (
