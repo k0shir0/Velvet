@@ -37,6 +37,15 @@ which validates it, persists it to SQLite, diffs it against the running bot, and
 affected modules.
 
 ---
+# Gallary
+<img width="1875" height="960" alt="image" src="https://github.com/user-attachments/assets/358a435e-a462-412b-b623-b4f64af0c4f4" />
+
+<img width="1903" height="958" alt="image" src="https://github.com/user-attachments/assets/2b3dfc43-37d1-4099-8a75-8bd1f1110dfd" />
+
+
+
+
+
 
 ## Getting started
 
