@@ -1,8 +1,8 @@
-# 🍷 Red Velvet
+# 🍷 Velvet
 
 A modular, **locally-hosted** Discord bot managed through a sleek web control panel.
 
-Red Velvet starts completely **barebones** — every feature is strictly opt-in. You toggle
+Velvet starts completely **barebones** — every feature is strictly opt-in. You toggle
 modules on from the dashboard, stage your configuration, and hit **Push Changes** to deploy to the live bot.
 
 ---
@@ -16,7 +16,7 @@ control panel talks directly to the live bot instance.
 velvet/
 ├─ shared/   @velvet/shared — module contract, config schemas, shared types (zod)
 ├─ server/   @velvet/server — discord.js bot + Express API + Socket.IO + SQLite (Drizzle)
-└─ web/      @velvet/web     — React + Vite control panel (Red Velvet theme)
+└─ web/      @velvet/web     — React + Vite control panel (Velvet theme)
 ```
 
 | Concern        | Choice                                            |

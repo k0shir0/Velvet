@@ -2,7 +2,7 @@
   "name": "velvet",
   "version": "0.1.0",
   "private": true,
-  "description": "Red Velvet — a modular, locally-hosted Discord bot with a web control panel.",
+  "description": "Velvet — a modular, locally-hosted Discord bot with a web control panel.",
   "type": "module",
   "workspaces": [
     "shared",

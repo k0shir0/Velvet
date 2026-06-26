@@ -25,7 +25,7 @@ export function Login({ onLogin }: { onLogin: () => void }) {
     <div className="login">
       <form onSubmit={submit}>
         <div className="brand-mark" />
-        <h2>Red Velvet</h2>
+        <h2>Velvet</h2>
         <p>Enter the control-panel password</p>
         <input
           type="password"

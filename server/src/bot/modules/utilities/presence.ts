@@ -12,8 +12,8 @@ async function tick(): Promise<void> {
   const client = getClient();
   if (!client.isReady() || !cfg.presenceEnabled) return;
 
-  const messages = cfg.presenceMessages.length > 0 ? cfg.presenceMessages : ["Red Velvet"];
-  let text = messages[index % messages.length] ?? "Red Velvet";
+  const messages = cfg.presenceMessages.length > 0 ? cfg.presenceMessages : ["Velvet"];
+  let text = messages[index % messages.length] ?? "Velvet";
   index += 1;
 
   if (cfg.showTelemetry) {

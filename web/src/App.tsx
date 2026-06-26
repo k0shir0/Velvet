@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { SocketEvents } from "@velvet/shared";
-import type { BotStatus, StatusResponse, SystemStats } from "@velvet/shared";
+import type { StatusResponse, SystemStats } from "@velvet/shared";
 import { clearToken, getStatus, getToken } from "./lib/api";
 import { getSocket } from "./lib/socket";
+import { THEMES, applyTheme, getTheme, type ThemeName } from "./lib/theme";
 import { Login } from "./components/Login";
 import { CommandConsole } from "./tabs/CommandConsole";
 import { ModuleManager } from "./tabs/ModuleManager";
@@ -27,24 +28,16 @@ export function App() {
 
 function Dashboard({ onLogout }: { onLogout: () => void }) {
   const [tab, setTab] = useState<Tab>("console");
-  const [bot, setBot] = useState<BotStatus | null>(null);
   const [system, setSystem] = useState<SystemStats | null>(null);
 
   useEffect(() => {
     let alive = true;
     getStatus()
-      .then((s) => {
-        if (!alive) return;
-        setBot(s.bot);
-        setSystem(s.system);
-      })
+      .then((s) => alive && setSystem(s.system))
       .catch(() => {});
 
     const socket = getSocket();
-    const onStats = (s: StatusResponse) => {
-      setBot(s.bot);
-      setSystem(s.system);
-    };
+    const onStats = (s: StatusResponse) => setSystem(s.system);
     socket.on(SocketEvents.Stats, onStats);
     return () => {
       alive = false;
@@ -54,24 +47,15 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
 
   return (
     <div className="app">
-      <Header bot={bot} system={system} onLogout={onLogout} />
+      <Header system={system} onLogout={onLogout} />
       <nav className="tabs">
-        <button
-          className={`tab ${tab === "console" ? "active" : ""}`}
-          onClick={() => setTab("console")}
-        >
+        <button className={`tab ${tab === "console" ? "active" : ""}`} onClick={() => setTab("console")}>
           Command Console
         </button>
-        <button
-          className={`tab ${tab === "modules" ? "active" : ""}`}
-          onClick={() => setTab("modules")}
-        >
+        <button className={`tab ${tab === "modules" ? "active" : ""}`} onClick={() => setTab("modules")}>
           Module Manager
         </button>
-        <button
-          className={`tab ${tab === "audit" ? "active" : ""}`}
-          onClick={() => setTab("audit")}
-        >
+        <button className={`tab ${tab === "audit" ? "active" : ""}`} onClick={() => setTab("audit")}>
           Audit Log
         </button>
         <button
@@ -91,22 +75,21 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
   );
 }
 
-function Header({
-  bot,
-  system,
-  onLogout,
-}: {
-  bot: BotStatus | null;
-  system: SystemStats | null;
-  onLogout: () => void;
-}) {
-  const online = bot?.online ?? false;
+function Header({ system, onLogout }: { system: SystemStats | null; onLogout: () => void }) {
+  const [open, setOpen] = useState(false);
+  const [theme, setThemeState] = useState<ThemeName>(getTheme());
+
+  const setTheme = (t: ThemeName) => {
+    applyTheme(t);
+    setThemeState(t);
+  };
+
   return (
     <header className="header">
       <div className="brand">
         <div className="brand-mark" />
         <div>
-          <h1>Red Velvet</h1>
+          <h1>Velvet</h1>
           <span>Control Panel</span>
         </div>
       </div>
@@ -121,13 +104,39 @@ function Header({
           </div>
         </div>
       )}
-      <div className="status-chip">
-        <span className={`dot ${online ? "online" : "offline"}`} />
-        {online ? (bot?.username ?? "Online") : "Offline"}
+      <div className="settings-wrap">
+        <button
+          className={`icon-btn ${open ? "active" : ""}`}
+          onClick={() => setOpen((o) => !o)}
+          aria-label="Settings"
+        >
+          ⚙
+        </button>
+        {open && (
+          <>
+            <div className="menu-backdrop" onClick={() => setOpen(false)} />
+            <div className="settings-menu">
+              <div className="menu-label">Theme</div>
+              <div className="theme-row">
+                {THEMES.map((t) => (
+                  <button
+                    key={t.id}
+                    className={`theme-btn ${theme === t.id ? "active" : ""}`}
+                    onClick={() => setTheme(t.id)}
+                  >
+                    <span className={`theme-swatch ${t.id}`} />
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+              <div className="menu-divider" />
+              <button className="menu-item" onClick={onLogout}>
+                Log out
+              </button>
+            </div>
+          </>
+        )}
       </div>
-      <button className="ghost-btn" onClick={onLogout}>
-        Log out
-      </button>
     </header>
   );
 }

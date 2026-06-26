@@ -52,7 +52,11 @@ function Field({
     return (
       <div className={`cfg-row toggle-row ${disabled ? "disabled" : ""}`}>
         <span>{field.label}</span>
-        <Toggle checked={Boolean(raw)} onChange={(v) => !disabled && onSet(field.key, v)} />
+        <Toggle
+          checked={Boolean(raw)}
+          disabled={disabled}
+          onChange={(v) => onSet(field.key, v)}
+        />
       </div>
     );
   }
