@@ -6,6 +6,7 @@ import type {
   LoginResponse,
   ModuleState,
   ModulesResponse,
+  PermissionAudit,
   StatusResponse,
 } from "@velvet/shared";
 
@@ -75,6 +76,9 @@ export const getStatus = (): Promise<StatusResponse> =>
   request<StatusResponse>("/api/status");
 
 export const getGuild = (): Promise<GuildInfo> => request<GuildInfo>("/api/guild");
+
+export const getPermissions = (): Promise<PermissionAudit> =>
+  request<PermissionAudit>("/api/permissions");
 
 export const getAudit = (q: AuditQuery = {}): Promise<AuditResponse> => {
   const params = new URLSearchParams();

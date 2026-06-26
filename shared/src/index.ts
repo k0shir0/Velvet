@@ -341,6 +341,24 @@ export const AUDIT_EVENT_LABELS: Record<AuditEventType, string> = {
   voice_move: "Voice Move",
 };
 
+/* Permission auditor (Phase 4 — Core Utilities). */
+export interface ChannelPermissionInfo {
+  id: string;
+  name: string;
+  type: "category" | "text" | "voice" | "other";
+  parentId: string | null;
+  position: number;
+  /** @everyone is denied View Channel. */
+  private: boolean;
+  /** Roles that can view a private channel (empty for public channels). */
+  allowedRoles: GuildRoleInfo[];
+}
+
+export interface PermissionAudit {
+  available: boolean;
+  channels: ChannelPermissionInfo[];
+}
+
 /* ────────────────────────────────────────────────────────────────────────
  * Realtime (Socket.IO) payloads + event names
  * ──────────────────────────────────────────────────────────────────────── */

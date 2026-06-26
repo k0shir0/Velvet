@@ -7,8 +7,9 @@ import { Login } from "./components/Login";
 import { CommandConsole } from "./tabs/CommandConsole";
 import { ModuleManager } from "./tabs/ModuleManager";
 import { AuditLog } from "./tabs/AuditLog";
+import { Permissions } from "./tabs/Permissions";
 
-type Tab = "console" | "modules" | "audit";
+type Tab = "console" | "modules" | "audit" | "permissions";
 
 export function App() {
   const [authed, setAuthed] = useState(() => !!getToken());
@@ -73,11 +74,18 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
         >
           Audit Log
         </button>
+        <button
+          className={`tab ${tab === "permissions" ? "active" : ""}`}
+          onClick={() => setTab("permissions")}
+        >
+          Permissions
+        </button>
       </nav>
       <main className="content">
         {tab === "console" && <CommandConsole />}
         {tab === "modules" && <ModuleManager />}
         {tab === "audit" && <AuditLog />}
+        {tab === "permissions" && <Permissions />}
       </main>
     </div>
   );

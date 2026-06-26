@@ -9,6 +9,7 @@ import { auditRouter } from "./routes/audit.js";
 import { consoleRouter } from "./routes/console.js";
 import { guildRouter } from "./routes/guild.js";
 import { modulesRouter } from "./routes/modules.js";
+import { permissionsRouter } from "./routes/permissions.js";
 import { statusRouter } from "./routes/status.js";
 
 export function createHttpServer(): HttpServer {
@@ -30,6 +31,7 @@ export function createHttpServer(): HttpServer {
   app.use("/api/status", requireAuth, statusRouter);
   app.use("/api/guild", requireAuth, guildRouter);
   app.use("/api/audit", requireAuth, auditRouter);
+  app.use("/api/permissions", requireAuth, permissionsRouter);
 
   // In production, serve the built dashboard (in dev, Vite serves it).
   const webDist = join(dirname(fileURLToPath(import.meta.url)), "../../../web/dist");
